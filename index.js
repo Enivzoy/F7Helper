@@ -4,7 +4,7 @@ export function k(msg) {
     ChatLib.chat("&3[&aFloor7Helper&3]&r: "+ msg)
 }
 import PogObject from "../PogData";
-export const data = new PogObject("Bendinghelper", {
+export const data = new PogObject("f7helper", {
     chatFD: true,
     creeperveilenabled: true,
     withercloakslot: undefined
