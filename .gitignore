@@ -1,2 +1,3 @@
 .vscode/
 dist/
+./modules/slotbinding/data.json

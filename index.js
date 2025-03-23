@@ -18,3 +18,4 @@ register("worldUnload",()=>{
 })
 
 import './modules/slotbinding/Slotbinding'
+import './modules/withercloak/CreeperVeil'
