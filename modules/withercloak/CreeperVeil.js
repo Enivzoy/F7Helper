@@ -1,5 +1,5 @@
 /// <reference types="../../../CTAutocomplete" />
-import { data, k } from '../../index';
+import { data, feed } from '../../index';
 
 const Memory = {
     witherCloakTimeLeft: 10,
@@ -28,14 +28,14 @@ let alternateTick = 0;
 
 register("chat", (event) => {
     const message = ChatLib.removeFormatting(event);
-    if (message.includes(CREEPER_VEIL_MESSAGE)) {
-        if (data.chatFD) k("Creeper Veil detected via chat!");
+    if (message == CREEPER_VEIL_MESSAGE) {
+        if (data.chatFD) feed("Creeper Veil detected via chat!");
         Memory.witherCloakClicked = true;
         Memory.witherCloakTimeLeft = 10;
     }
-    if(message.includes(CREEPER_VEIL_DEACTIVATE)) {
+    if(message == CREEPER_VEIL_DEACTIVATE) {
         Memory.witherCloakClicked = false;
-        if(data.chatFD) k("Creeper Veil deactivated! Sucessfully Reduced Cooldown");
+        if(data.chatFD) feed("Creeper Veil deactivated! Sucessfully Reduced Cooldown");
     }
 }).setCriteria("${message}");
 
@@ -65,16 +65,16 @@ register("tick", () => {
         if (Memory.witherCloakClicked) {
             Memory.witherCloakTimeLeft--;
             if (data.chatFD) {
-                k(`Wither cloak time Left: ${Memory.witherCloakTimeLeft}`);
+                feed(`Wither cloak time Left: ${Memory.witherCloakTimeLeft}`);
             }
             if (Memory.witherCloakTimeLeft === COOLDOWN_WARNING_TIME) {
                 Client.showTitle(`&6&klol&r &6WITHER CLOAK EXPIRING SOON &6&klol&r", "Time Left : &a${COOLDOWN_WARNING_TIME} Seconds`, 0, 15, 5);
-                k(`&6WITHER CLOAK EXPIRING SOON !!! RIGHT CLICK TO REDUCE COOLDOWN!!\nTime Left : &a${COOLDOWN_WARNING_TIME} Seconds`);
+                feed(`&6WITHER CLOAK EXPIRING SOON !!! RIGHT CLICK TO REDUCE COOLDOWN!!\nTime Left : &a${COOLDOWN_WARNING_TIME} Seconds`);
             }
 
             if (Memory.witherCloakTimeLeft === 0) {
                 Client.showTitle("&6&klol&r&a WITHER CLOAK DEACTIVATED &6&klol&r", "&aSkill Issue", 0, 15, 5);
-                k("&8REDUCE COOLDOWN TIME PERIOD FAILED");
+                feed("&8REDUCE COOLDOWN TIME PERIOD FAILED");
                 Memory.witherCloakClicked = false;
                 setTimer(0);
             }

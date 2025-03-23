@@ -45,9 +45,46 @@ function save() {
     ConfigObject.save();
 }
 
-register("Command", () => {
-    ConfigObject.toggled = !ConfigObject.toggled;
-    feed(`&dSlotbinding: &6${ConfigObject.toggled}`)
+register("Command", (args) => {
+    if(ConfigObject.boxColor === 0) {
+        feed(`&aSetting default color to Red`);
+        ConfigObject.boxColor = rgbaToArgb(255, 125, 0, 0);
+    }
+    if (args == undefined) {
+        ConfigObject.toggled = !ConfigObject.toggled;
+        feed(`&dSlotbinding: &6${ConfigObject.toggled}`);
+        
+    } else {
+        const color = args[0].toLowerCase();
+        switch (color) {
+            case "r":
+                ConfigObject.boxColor = rgbaToArgb(255, 125, 0, 0);
+                break;
+            case "g":
+                ConfigObject.boxColor = rgbaToArgb(0, 125, 0, 0);
+                break;
+            case "b":
+                ConfigObject.boxColor = rgbaToArgb(0, 0, 125, 0);
+                break;
+            case "c":
+                ConfigObject.boxColor = rgbaToArgb(0, 125, 125, 0);
+                break;
+            case "m":
+                ConfigObject.boxColor = rgbaToArgb(125, 0, 125, 0);
+                break;
+            case "p":
+                ConfigObject.boxColor = rgbaToArgb(255, 105, 180, 0);
+                break;
+            case "w":
+                ConfigObject.boxColor = rgbaToArgb(255, 255, 255, 0);
+                break;
+            default:
+                feed(`&cInvalid color: &7${color} choosing red instead`);
+                ConfigObject.boxColor = rgbaToArgb(255, 125, 0, 0);
+                return;
+        }
+        feed(`&dSlotbinding color set to: &6${color}`);
+    }
     save();
 }).setName("slotbinding");
 
@@ -145,7 +182,10 @@ const slotBindingRenderer = register("PostGuiRender", (mouseX, mouseY, gui) => {
             GlStateManager.func_179147_l(); // enableBlend
             GL11.glEnable(GL11.GL_LINE_SMOOTH);
 
-            drawSlot(x0, y0, width);
+            // Show preview with current color
+            const previewColor = ConfigObject.boxColor || rgbaToArgb(255, 125, 0, 0);
+            drawSlot(x0, y0, width, previewColor);
+            
             GlStateManager.func_179097_i(); // disableDepth
             drawBorder(x0, y0, width);
             Renderer.drawLine(BORDER_COLOR, x0 + half, y0 + half, mouseX, mouseY, 1);
@@ -160,7 +200,11 @@ const slotBindingRenderer = register("PostGuiRender", (mouseX, mouseY, gui) => {
                 if (!theSlot || slots.indexOf(theSlot) < 5) return true;
                 const slotIndex = slotIndexField.get(theSlot);
                 if (slotIndex === bindingSlot) return true;
-                const newBind = new Bind(slotIndex, bindingSlot);
+                
+                // Make sure to use current color when creating a new bind
+                const currentColor = ConfigObject.boxColor || rgbaToArgb(255, 125, 0, 0);
+                const newBind = new Bind(slotIndex, bindingSlot, currentColor);
+                
                 if (newBind.slot0 > 8 || ConfigObject.hasBind(newBind)) return true;
                 binds.push(newBind);
                 return false;
@@ -182,14 +226,18 @@ const slotBindingRenderer = register("PostGuiRender", (mouseX, mouseY, gui) => {
     GlStateManager.func_179090_x(); // disableTexture2D
     GlStateManager.func_179147_l(); // enableBlend
     GL11.glEnable(GL11.GL_LINE_SMOOTH);
+
     for (let bind of binds) {
         let slot0i = bind.slot0;
         let slot1i = bind.slot1;
         if (slot0i < 9) slot0i += 36;
         if (slot1i < 9) slot1i += 36;
         else if (slot1i > 35) slot1i = -slot1i + 44;
+        
         let slot0 = slots[slot0i];
         let slot1 = slots[slot1i];
+        if (!slot0 || !slot1) continue;
+        
         let x0 = slot0.field_75223_e;
         let y0 = slot0.field_75221_f;
         let x1 = slot1.field_75223_e;
@@ -198,15 +246,24 @@ const slotBindingRenderer = register("PostGuiRender", (mouseX, mouseY, gui) => {
         y0 += guiTop;
         x1 += guiLeft;
         y1 += guiTop;
+        
+        // Ensure boxColor is properly used - fallback to global color if undefined
+        const bindBoxColor = (bind.boxColor !== undefined && bind.boxColor !== 0) 
+            ? bind.boxColor 
+            : ConfigObject.boxColor;
+            
+        // Debug
+        // Client.showTitle("Color: " + bindBoxColor, "", 1, 1, 1);
 
         if (!drawn.has(slot0i)) {
             drawn.add(slot0i);
-            drawSlot(x0, y0, width);
+            drawSlot(x0, y0, width, bindBoxColor);
         }
         if (!drawn.has(slot1i)) {
             drawn.add(slot1i);
-            drawSlot(x1, y1, width);
+            drawSlot(x1, y1, width, bindBoxColor);
         }
+        
         let border = !borderDrawn && (theSlot === slot0 || theSlot === slot1);
         if (border) {
             let half = width * 0.5;
@@ -218,20 +275,28 @@ const slotBindingRenderer = register("PostGuiRender", (mouseX, mouseY, gui) => {
             borderDrawn = true;
         }
     }
+    
     GL11.glDisable(GL11.GL_LINE_SMOOTH);
     GlStateManager.func_179084_k(); // disableBlend
     GlStateManager.func_179098_w(); // enableTexture2D
     GlStateManager.func_179121_F(); // popMatrix
 }).unregister();
 
+function drawSlot(x, y, width, boxColor) {
+    const color = boxColor || BOX_COLOR;
+    // Make sure color is not 0 (transparent/empty)
+    if (color === 0) {
+        Renderer.drawRect(rgbaToArgb(255, 125, 0, 0), x, y, width, width);
+    } else {
+        Renderer.drawRect(color, x, y, width, width);
+    }
+}
+
 function removeBind(slotIndex) {
     const newbinds = ConfigObject.binds.filter(bind => bind.slot0 !== slotIndex && bind.slot1 !== slotIndex)
     ConfigObject.binds = newbinds;
 }
 
-function drawSlot(x, y, width) {
-    Renderer.drawRect(BOX_COLOR, x, y, width, width);
-}
 
 function drawBorder(x, y, width) {
     GL11.glLineWidth(2);
@@ -251,8 +316,9 @@ function clickSlotButton(screen, slot, button) {
     keyDownBuffer.put(42, wasShiftDown ? 1 : 0);
 }
 
-const BOX_COLOR = rgbaToArgb(255, 125, 125, 125);//r
-const BORDER_COLOR = rgbaToArgb(255, 0, 0, 255);//customisble when??
+
+const BOX_COLOR = ConfigObject.boxColor;
+const BORDER_COLOR = rgbaToArgb(255, 0, 0, 255);
 
 function rgbaToArgb(r, g, b, a) {
     return (a << 24) | (r << 16) | (g << 8) | b | 0;
@@ -261,5 +327,3 @@ function rgbaToArgb(r, g, b, a) {
 mainSlotBinding.register();
 slotBindingRenderer.register();
 slotBinder.register();
-
-//has errors but will work
