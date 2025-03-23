@@ -1,4 +1,4 @@
 .vscode/
 dist/
-./modules/slotbinding/data.json
+modules/slotbinding/data.json
 .data.json
