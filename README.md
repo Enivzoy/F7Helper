@@ -3,4 +3,4 @@ most features dont work on m7
 
 # to do
 - bonzo helper
-- slotbinding(replace neu)
+- slotbinding(replace neu) done done done
