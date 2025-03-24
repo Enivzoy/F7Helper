@@ -45,10 +45,10 @@ function save() {
     ConfigObject.save();
 }
 
-register("Command", (args) => {
+register("Command", (...args) => {
     if(ConfigObject.boxColor === 0) {
         feed(`&aSetting default color to Red`);
-        ConfigObject.boxColor = rgbaToArgb(255, 125, 0, 0);
+        ConfigObject.boxColor = Renderer.color(255, 125, 0);
     }
     if (args == undefined) {
         ConfigObject.toggled = !ConfigObject.toggled;
@@ -57,30 +57,30 @@ register("Command", (args) => {
     } else {
         const color = args[0].toLowerCase();
         switch (color) {
-            case "r":
-                ConfigObject.boxColor = rgbaToArgb(255, 125, 0, 0);
+            case "red":
+                ConfigObject.boxColor = Renderer.color(255, 125, 0);
                 break;
-            case "g":
-                ConfigObject.boxColor = rgbaToArgb(0, 125, 0, 0);
+            case "green":
+                ConfigObject.boxColor = Renderer.color(0, 125, 0);
                 break;
-            case "b":
-                ConfigObject.boxColor = rgbaToArgb(0, 0, 125, 0);
+            case "blue":
+                ConfigObject.boxColor = Renderer.color(0, 0, 125);
                 break;
-            case "c":
-                ConfigObject.boxColor = rgbaToArgb(0, 125, 125, 0);
+            case "cyan":
+                ConfigObject.boxColor = Renderer.color(0, 125, 125);
                 break;
-            case "m":
-                ConfigObject.boxColor = rgbaToArgb(125, 0, 125, 0);
+            case "magenta":
+                ConfigObject.boxColor = Renderer.color(125, 0, 125);
                 break;
-            case "p":
-                ConfigObject.boxColor = rgbaToArgb(255, 105, 180, 0);
+            case "pink":
+                ConfigObject.boxColor = Renderer.color(255, 105, 180);
                 break;
-            case "w":
-                ConfigObject.boxColor = rgbaToArgb(255, 255, 255, 0);
+            case "white":
+                ConfigObject.boxColor = Renderer.color(255, 255, 255);
                 break;
             default:
                 feed(`&cInvalid color: &7${color} choosing red instead`);
-                ConfigObject.boxColor = rgbaToArgb(255, 125, 0, 0);
+                ConfigObject.boxColor = Renderer.color(255, 125, 0);
                 return;
         }
         feed(`&dSlotbinding color set to: &6${color}`);
@@ -183,7 +183,7 @@ const slotBindingRenderer = register("PostGuiRender", (mouseX, mouseY, gui) => {
             GL11.glEnable(GL11.GL_LINE_SMOOTH);
 
             // Show preview with current color
-            const previewColor = ConfigObject.boxColor || rgbaToArgb(255, 125, 0, 0);
+            const previewColor = ConfigObject.boxColor || Renderer.color(255, 125, 0);
             drawSlot(x0, y0, width, previewColor);
             
             GlStateManager.func_179097_i(); // disableDepth
@@ -202,7 +202,7 @@ const slotBindingRenderer = register("PostGuiRender", (mouseX, mouseY, gui) => {
                 if (slotIndex === bindingSlot) return true;
                 
                 // Make sure to use current color when creating a new bind
-                const currentColor = ConfigObject.boxColor || rgbaToArgb(255, 125, 0, 0);
+                const currentColor = ConfigObject.boxColor;
                 const newBind = new Bind(slotIndex, bindingSlot, currentColor);
                 
                 if (newBind.slot0 > 8 || ConfigObject.hasBind(newBind)) return true;
@@ -283,12 +283,11 @@ const slotBindingRenderer = register("PostGuiRender", (mouseX, mouseY, gui) => {
 }).unregister();
 
 function drawSlot(x, y, width, boxColor) {
-    const color = boxColor || BOX_COLOR;
-    // Make sure color is not 0 (transparent/empty)
+    const color = boxColor 
     if (color === 0) {
-        Renderer.drawRect(rgbaToArgb(255, 125, 0, 0), x, y, width, width);
+        Renderer.drawRect(Renderer.color(255,0,0,0), x, y, width, width);
     } else {
-        Renderer.drawRect(color, x, y, width, width);
+        Renderer.drawRect(boxColor, x, y, width, width);
     }
 }
 
@@ -317,8 +316,7 @@ function clickSlotButton(screen, slot, button) {
 }
 
 
-const BOX_COLOR = ConfigObject.boxColor;
-const BORDER_COLOR = rgbaToArgb(255, 0, 0, 255);
+const BORDER_COLOR = ConfigObject.boxColor;
 
 function rgbaToArgb(r, g, b, a) {
     return (a << 24) | (r << 16) | (g << 8) | b | 0;
