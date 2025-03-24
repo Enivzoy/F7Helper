@@ -314,9 +314,8 @@ function clickSlotButton(screen, slot, button) {
     mouseReleasedMethod.invoke(screen, new JavaInt(x), new JavaInt(y), new JavaInt(button));
     keyDownBuffer.put(42, wasShiftDown ? 1 : 0);
 }
-
-
-const BORDER_COLOR = ConfigObject.boxColor;
+let BORDER_COLOR;
+register("step", () =>  BORDER_COLOR = ConfigObject.boxColor)
 
 function rgbaToArgb(r, g, b, a) {
     return (a << 24) | (r << 16) | (g << 8) | b | 0;
