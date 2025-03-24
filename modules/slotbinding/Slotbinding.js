@@ -50,10 +50,9 @@ register("Command", (...args) => {
         feed(`&aSetting default color to Red`);
         ConfigObject.boxColor = Renderer.color(255, 125, 0);
     }
-    if (args == undefined) {
+    if (!args[0]) {
         ConfigObject.toggled = !ConfigObject.toggled;
         feed(`&dSlotbinding: &6${ConfigObject.toggled}`);
-        
     } else {
         const color = args[0].toLowerCase();
         switch (color) {
