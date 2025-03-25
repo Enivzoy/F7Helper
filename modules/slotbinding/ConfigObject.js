@@ -8,6 +8,7 @@ export const ConfigObject = new class {
         this.key = 0;
         this.binds = [];
         this.boxColor = 0;
+        this.drawCircle = false;
     }
 
     load() {
@@ -17,6 +18,7 @@ export const ConfigObject = new class {
             this.toggled = json.toggled;
             this.key = json.key;
             this.boxColor = json.boxColor;
+            this.drawCircle = json.drawCircle; // Load new property
 
             const binds = json.binds;
             const length = binds.length;
@@ -52,6 +54,7 @@ export const ConfigObject = new class {
                 key: this.key,
                 binds: binds,
                 boxColor: this.boxColor,
+                drawCircle: this.drawCircle, // Save new property
             };
             FileLib.write(this.path, this.name, JSON.stringify(json, null, 2));
             return true;

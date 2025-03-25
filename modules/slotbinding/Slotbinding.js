@@ -284,9 +284,8 @@ const slotBindingRenderer = register("PostGuiRender", (mouseX, mouseY, gui) => {
 }).unregister();
 
 function drawSlot(x, y, width, boxColor) {
-    const color = boxColor 
-    if (color === 0) {
-        Renderer.drawRect(Renderer.color(255,0,0,0), x, y, width, width);
+    if(ConfigObject.drawCircle) {
+        Renderer.drawCircle(boxColor,x+7.8,y+7.8,width/2,360) 
     } else {
         Renderer.drawRect(boxColor, x, y, width, width);
     }
@@ -317,10 +316,6 @@ function clickSlotButton(screen, slot, button) {
 }
 let BORDER_COLOR;
 register("step", () =>  BORDER_COLOR = ConfigObject.boxColor)
-
-function rgbaToArgb(r, g, b, a) {
-    return (a << 24) | (r << 16) | (g << 8) | b | 0;
-}
 
 mainSlotBinding.register();
 slotBindingRenderer.register();
