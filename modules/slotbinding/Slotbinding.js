@@ -265,11 +265,13 @@ const slotBindingRenderer = register("PostGuiRender", (mouseX, mouseY, gui) => {
         
         let border = !borderDrawn && (theSlot === slot0 || theSlot === slot1);
         if (border) {
+            bindBoxColor
+            
             let half = width * 0.5;
             GlStateManager.func_179097_i(); // disableDepth
             drawBorder(x0, y0, width);
             drawBorder(x1, y1, width);
-            Renderer.drawLine(BORDER_COLOR, x0 + half, y0 + half, x1 + half, y1 + half, 1);
+            Renderer.drawLine(bindBoxColor, x0 + half, y0 + half, x1 + half, y1 + half, 1);
             GlStateManager.func_179126_j(); // enableDepth
             borderDrawn = true;
         }
