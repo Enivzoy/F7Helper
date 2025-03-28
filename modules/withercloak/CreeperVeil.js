@@ -9,10 +9,7 @@ const Memory = {
 
 const SPAM_DELAY_TICKS = 23;
 const SPAM_RESET_TICKS = 25;
-const COOLDOWN_WARNING_TIME = 3; // when should it tell you, you need to swap back
-
-const CREEPER_VEIL_MESSAGE = "Creeper Veil Activated!"; // honestly no idea why these are here
-const CREEPER_VEIL_DEACTIVATE ="Creeper Veil De-activated!"
+const COOLDOWN_WARNING_TIME = 3;
 
 
 const display = new Display();
@@ -28,19 +25,22 @@ let alternateTick = 0;
 
 register("chat", (event) => {
     const message = ChatLib.removeFormatting(event);
-    if (message == CREEPER_VEIL_MESSAGE) {
-        if (data.chatFD) feed("Creeper Veil detected via chat!");
+    if (message == "Creeper Veil Activated!") {
         Memory.witherCloakClicked = true;
         Memory.witherCloakTimeLeft = 10;
     }
-    if(message == CREEPER_VEIL_DEACTIVATE) {
+    if(message == "Creeper Veil De-activated!") {
         Memory.witherCloakClicked = false;
+        Memory.witherCloakTimeLeft = 10;
         if(data.chatFD) feed("Creeper Veil deactivated! Sucessfully Reduced Cooldown");
+        startCd(5)
+    } else if (message == "Creeper Veil De-activated! (Expired)") {
+        startCd(10)
     }
 }).setCriteria("${message}");
 
 register("tick", () => {
-    setTimer(Memory.witherCloakTimeLeft);
+    
     if (!Memory.witherCloakClicked) {
         Memory.witherCloakTimeLeft = 10;
         ticks = 0;
@@ -63,12 +63,11 @@ register("tick", () => {
         ticks = 0;
 
         if (Memory.witherCloakClicked) {
+            setTimer(Memory.witherCloakTimeLeft);
             Memory.witherCloakTimeLeft--;
-            if (data.chatFD) {
-                feed(`Wither cloak time Left: ${Memory.witherCloakTimeLeft}`);
-            }
             if (Memory.witherCloakTimeLeft === COOLDOWN_WARNING_TIME) {
-                Client.showTitle(`&6&klol&r &6WITHER CLOAK EXPIRING SOON &6&klol&r", "Time Left : &a${COOLDOWN_WARNING_TIME} Seconds`, 0, 15, 5);
+                Client.show
+                Client.showTitle("&6&klol&r &6WITHER CLOAK EXPIRING SOON &6&klol&r", `Time Left : &a${COOLDOWN_WARNING_TIME} Seconds`, 0, 15, 5);
                 feed(`&6WITHER CLOAK EXPIRING SOON !!! RIGHT CLICK TO REDUCE COOLDOWN!!\nTime Left : &a${COOLDOWN_WARNING_TIME} Seconds`);
             }
 
@@ -76,14 +75,29 @@ register("tick", () => {
                 Client.showTitle("&6&klol&r&a WITHER CLOAK DEACTIVATED &6&klol&r", "&aSkill Issue", 0, 15, 5);
                 feed("&8REDUCE COOLDOWN TIME PERIOD FAILED");
                 Memory.witherCloakClicked = false;
-                setTimer(0);
             }
         }
     }
 });
 
 function setTimer(number) {
-    let color = "&c"
-    if(number >= COOLDOWN_WARNING_TIME) color = "&6"
-    display.setLine(0,`&aCreeper Veil: ${color}${(number!==0)?number : ""}`)
+    if (typeof number == "boolean") {
+        display.setLine(0,`&aCreeper Veil: &dREADY`)
+    } else {
+        let color = "&c"
+        if(number >= COOLDOWN_WARNING_TIME) color = "&6"
+        display.setLine(0,`&aCreeper Veil: ${color}${(number!==0)?number : ""}`)
+    }
+}
+
+function startCd(timer) {
+    let zz = timer;
+    let skibidi = register("step", () => {
+        display.setLine(0, `[&6ON COOLDOWN&r] &aCreeper Veil: &0${zz} seconds`);
+        zz--;
+        if(zz <= 0) {
+            skibidi.unregister();
+            setTimer(true)
+        }
+    }).setFps(1);
 }

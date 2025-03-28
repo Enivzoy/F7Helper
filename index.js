@@ -4,8 +4,13 @@
  * feedback
  * ChatLib.chat("&3[&aFloor7Helper&3]&r: "+ msg)
 */
-export function feed(msg) {
-    ChatLib.chat("&3[&aFloor7Helper&3]&r: "+ msg)
+export function feed(msg,hovermsg) {
+    let msga;
+    
+    if(hovermsg) { msga = new TextComponent(`&3[&aFloor7Helper&3]&r: ${msg}`).setHoverValue(hovermsg)} else {
+        msga = new TextComponent(`&3[&aFloor7Helper&3]&r: ${msg}`)
+    }
+    ChatLib.chat(msga)
 }
 import PogObject from "../PogData";
 

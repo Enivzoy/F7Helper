@@ -46,18 +46,36 @@ function save() {
 }
 
 register("Command", (...args) => {
+    if(!args[0]) {
+        feed("----------------------------------------------------")
+        feed("                 F7Helper: Slotbinding             ")
+        feed("Usage: /slobinding [enable/toggle]                 ","Enables or Disables Slotbinding")
+        feed("Usage: /slobinding [DrawCircle/circle]             ","Enables or Disables To draw binds/renders as circles")
+        feed("Usage: /slobinding [red/green/blue/magenta/pink]   ","Sets the color, other colors are Cyan and White not listed ")
+        feed("      Hover over each usage to see what they do    ")
+        feed("----------------------------------------------------")
+        return;
+    }
     if(ConfigObject.boxColor === 0) {
         feed(`&aSetting default color to Red`);
-        ConfigObject.boxColor = Renderer.color(255, 125, 0);
+        ConfigObject.boxColor = Renderer.color(255, 0, 0);
     }
-    if (!args[0]) {
+    if(args[0].toLowerCase() === "drawcircle" ||
+     args[0].toLowerCase() === "circle") {
+        ConfigObject.drawCircle = !ConfigObject.drawCircle;
+        feed(`&dSlotbinding: DrawCircle State: &6${ConfigObject.drawCircle}`);
+        return
+     }
+    if (args[0].toLowerCase() === "toggle" ||
+        args[0].toLowerCase() === "enable") {
         ConfigObject.toggled = !ConfigObject.toggled;
         feed(`&dSlotbinding: &6${ConfigObject.toggled}`);
+        return
     } else {
         const color = args[0].toLowerCase();
         switch (color) {
             case "red":
-                ConfigObject.boxColor = Renderer.color(255, 125, 0);
+                ConfigObject.boxColor = Renderer.color(255, 0, 0);
                 break;
             case "green":
                 ConfigObject.boxColor = Renderer.color(0, 125, 0);
@@ -79,13 +97,17 @@ register("Command", (...args) => {
                 break;
             default:
                 feed(`&cInvalid color: &7${color} choosing red instead`);
-                ConfigObject.boxColor = Renderer.color(255, 125, 0);
+                ConfigObject.boxColor = Renderer.color(255, 0, 0);
                 return;
         }
         feed(`&dSlotbinding color set to: &6${color}`);
     }
     save();
 }).setName("slotbinding");
+
+register("command", () => {
+    ChatLib.clearChat()
+}).setName("clearchat")
 
 let clicking = false;
 
