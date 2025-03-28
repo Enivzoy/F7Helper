@@ -26,9 +26,5 @@ this should be your folder, (pls note do not uninstall anything here)
 ![image](https://github.com/user-attachments/assets/d4f3099b-7aae-4914-b740-db97dd626bce)  
 drag and drop F7Helper-Master from 7zip to your modules folder  
 ![image](https://github.com/user-attachments/assets/51d84833-a5b6-4e0a-ae4b-b94a7780ed5d)  
-once its done go back to your game and run these commands
-`/ct import PogData`  
-![image](https://github.com/user-attachments/assets/9dd86e8c-0971-422c-8982-3f4a544805ac)  
-(if its already installed it should say "Module already installed)  
-then run `/ct load` and F7Helper should be installed :D
-![image](https://github.com/user-attachments/assets/12bb66ac-b104-4cd6-9ad9-cf07222aeef1)  
+then run `/ct load` in game and F7Helper should be installed :D
+
