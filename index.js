@@ -22,5 +22,15 @@ register("worldUnload",()=>{
     data.save();
 })
 
+//fix memory issuesz
+export const Maindisplay = new Display();
+
+Maindisplay.setAlign(DisplayHandler.Align.CENTER)
+
+//fix windowed mode/ect
+register('step', () => Maindisplay.setRenderLoc(Renderer.screen.getWidth() / 2, Renderer.screen.getHeight() / 2 - 10))
+Maindisplay.setBackgroundColor(Renderer.AQUA);
+
+
 import './modules/slotbinding/Slotbinding'
 import './modules/withercloak/CreeperVeil'
