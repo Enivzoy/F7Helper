@@ -4,6 +4,7 @@
   "entry": "index.js",
   "version": "0.0.1",
   "requires": [
-    "PogData"
+    "PogData",
+    "requestV2"
   ]
 }

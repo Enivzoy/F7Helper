@@ -73,7 +73,7 @@ register("Command", (...args) => {
         return
     } else {
         const color = args[0].toLowerCase();
-        switch (color) {
+        switch (color.toLowerCase()) {
             case "red":
                 ConfigObject.boxColor = Renderer.color(255, 0, 0);
                 break;

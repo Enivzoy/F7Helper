@@ -14,11 +14,10 @@ register("chat", (event) => {
     if (message == "Creeper Veil Activated!") {
         Memory.witherCloakClicked = true;
         Memory.witherCloakTimeLeft = 10;
-    }
-    if(message == "Creeper Veil De-activated!") {
+    } else if(message == "Creeper Veil De-activated!") {
         Memory.witherCloakClicked = false;
         Memory.witherCloakTimeLeft = 10;
-        if(data.chatFD) feed("Creeper Veil deactivated! Sucessfully Reduced Cooldown");
+        if(data.chatFD && data.creeperVeilEnabled) feed("Creeper Veil deactivated! Sucessfully Reduced Cooldown");
         startCd(5)
     } else if (message == "Creeper Veil De-activated! (Expired)") {
         startCd(10)
@@ -26,6 +25,7 @@ register("chat", (event) => {
 }).setCriteria("${message}");
 
 register('step', () => {
+    if(!data.creeperVeilEnabled) return;
     if (Memory.witherCloakClicked) {
         Memory.witherCloakTimeLeft--;
         setTimer(Memory.witherCloakTimeLeft);
@@ -43,6 +43,7 @@ register('step', () => {
 }).setFps(1);
 
 function setTimer(number) {
+    if(!data.creeperVeilEnabled) return;
     if (typeof number == "boolean") {
         Maindisplay.setLine(0,`&aCreeper Veil: &dREADY`)
     } else {
@@ -53,6 +54,7 @@ function setTimer(number) {
 }
 
 function startCd(timer) {
+    if(!data.creeperVeilEnabled) return;
     let zz = timer;
     let skibidi = register("step", () => {
         zz--;
